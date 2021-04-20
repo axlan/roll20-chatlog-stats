@@ -18,6 +18,9 @@ with open('data/sessions.txt', 'r') as fd:
 players = ['Ney','Vinny Smoothbeard','Gobheart','Arden',
            'Orin','Sanna Mistbrace','Raika ','Albrecht Landershire',
            'Milos Stache']
+NPC = "NPCs"
+df['character'] = df['character'].map(lambda x: x if x in players else NPC)
+players.append(NPC)
 
 ROLL_STAT_COLS = ['Num Rolls', 'Average Roll',
                   'Bad Rolls', 'Worst Streak',
