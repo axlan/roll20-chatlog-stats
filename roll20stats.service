@@ -1,0 +1,12 @@
+[Unit]
+Description=Stats from roll20 sessions
+After=network.target
+[Service]
+Type=simple
+Restart=always
+RestartSec=1
+User=axlan
+ExecStart=/home/axlan/src/roll20-chatlog-stats/run.sh
+
+[Install]
+WantedBy=multi-user.target
