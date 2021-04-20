@@ -28,6 +28,7 @@ types = df['type'].unique().tolist()
 OVERALL = 'Overall'
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
+server = app.server
 
 app.layout = dbc.Container([
     html.H1('Roll Filters'),
