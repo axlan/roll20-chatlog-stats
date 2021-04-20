@@ -134,7 +134,7 @@ def update_roll_types(player):
 
     data['Roll%'] = data['value'] / data['session'].map(lambda x: totals[x]) * 100.
 
-    fig = px.line(data, x='Session', y='Roll%', color="type", title='Roll Types' )
+    fig = px.line(data, x='Session', y='Roll%', color="type", title=f'Roll Types (Player={player})' )
     return fig
 
 
@@ -205,7 +205,7 @@ def update_roll_graph(player, roll_type, good_thresh, bad_thresh):
 
     stat_df = pd.DataFrame(stats)
 
-    fig = px.line(stat_df, x='Session', y='Roll Count', color="Stat", title='Roll Graph' )
+    fig = px.line(stat_df, x='Session', y='Roll Count', color="Stat", title=f'Roll Graph (Player={player} RollType={roll_type})' )
     return fig
 
 @app.callback(
@@ -215,7 +215,7 @@ def update_roll_graph(player, roll_type, good_thresh, bad_thresh):
      Input("dropdown_type", "value")])
 def update_roll_hist(session, player, roll_type):
     df_filtered = filter_df(session=session, player=player, roll_type=roll_type)
-    fig = px.histogram(df_filtered, x="value", labels={"value": 'Roll'}, nbins=20, range_x=[0.5, 20.5], title='Roll Histogram' )
+    fig = px.histogram(df_filtered, x="value", labels={"value": 'Roll'}, nbins=20, range_x=[0.5, 20.5], title=f'Roll Histogram (Session={session} Player={player} RollType={roll_type})' )
     return fig
 
 if __name__ == "__main__":
