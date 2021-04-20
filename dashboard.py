@@ -43,7 +43,8 @@ app.layout = dbc.Container([
                     id="dropdown_player",
                     options=[{"label": x, "value": x}
                             for x in  [OVERALL] + players],
-                    value=OVERALL
+                    value=OVERALL,
+                    clearable=False
                 )
             ]),
             dbc.FormGroup([
@@ -52,7 +53,8 @@ app.layout = dbc.Container([
                     id="dropdown_session",
                     options=[{"label": x, "value": x}
                             for x in [OVERALL] + sessions],
-                    value=OVERALL
+                    value=OVERALL,
+                    clearable=False
                 ),
             ]),
             dbc.FormGroup([
@@ -61,7 +63,8 @@ app.layout = dbc.Container([
                     id="dropdown_type",
                     options=[{"label": x, "value": x}
                             for x in [OVERALL] + types],
-                    value=OVERALL
+                    value=OVERALL,
+                    clearable=False
                 ),
             ]),
         ])]),
@@ -105,6 +108,7 @@ app.layout = dbc.Container([
     html.P('Click on legend items to enable/disable'),
     dcc.Graph(id="roll_graph"),
     dcc.Graph(id="type_graph"),
+    dcc.Graph(id="roll_hist"),
 ])
 
 def filter_df(player=OVERALL, session=OVERALL, roll_type=OVERALL):
@@ -204,5 +208,15 @@ def update_roll_graph(player, roll_type, good_thresh, bad_thresh):
     fig = px.line(stat_df, x='Session', y='Roll Count', color="Stat", title='Roll Graph' )
     return fig
 
+@app.callback(
+    Output("roll_hist", "figure"),
+    [Input("dropdown_session", "value"),
+     Input("dropdown_player", "value"),
+     Input("dropdown_type", "value")])
+def update_roll_hist(session, player, roll_type):
+    df_filtered = filter_df(session=session, player=player, roll_type=roll_type)
+    fig = px.histogram(df_filtered, x="value", labels={"value": 'Roll'}, nbins=20, range_x=[0.5, 20.5], title='Roll Histogram' )
+    return fig
+
 if __name__ == "__main__":
-    app.run_server(host='0.0.0.0', port=8181, debug=True)
+    app.run_server(host='0.0.0.0', port=8282, debug=True)
