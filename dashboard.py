@@ -19,8 +19,10 @@ players = ['Ney','Vinny Smoothbeard','Gobheart','Arden',
            'Orin','Sanna Mistbrace','Raika ','Albrecht Landershire',
            'Milos Stache']
 NPC = "NPCs"
+ALL_PLAYERS = 'PCs'
 df['character'] = df['character'].map(lambda x: x if x in players else NPC)
 players.append(NPC)
+players.append(ALL_PLAYERS)
 
 ROLL_STAT_COLS = ['Num Rolls', 'Average Roll',
                   'Bad Rolls', 'Worst Streak',
@@ -29,6 +31,7 @@ ROLL_STAT_COLS = ['Num Rolls', 'Average Roll',
 types = df['type'].unique().tolist()
 
 OVERALL = 'Overall'
+
 
 app = dash.Dash(__name__, external_stylesheets=[dbc.themes.FLATLY])
 server = app.server
@@ -42,7 +45,7 @@ app.layout = dbc.Container([
                 dcc.Dropdown(
                     id="dropdown_player",
                     options=[{"label": x, "value": x}
-                            for x in  [OVERALL] + players],
+                            for x in  [OVERALL, ALL_PLAYERS] + players],
                     value=OVERALL,
                     clearable=False
                 )
@@ -111,10 +114,13 @@ app.layout = dbc.Container([
     dcc.Graph(id="roll_hist"),
 ])
 
-def filter_df(player=OVERALL, session=OVERALL, roll_type=OVERALL):
-    df_filtered = df
+def filter_df(in_df, player=OVERALL, session=OVERALL, roll_type=OVERALL):
+    df_filtered = in_df
     if player != OVERALL:
-        df_filtered = df_filtered[df_filtered['character'] == player]
+        if player == ALL_PLAYERS:
+            df_filtered = df_filtered[df_filtered['character'] != NPC]
+        else:
+            df_filtered = df_filtered[df_filtered['character'] == player]
     if session != OVERALL:
         session_idx = sessions.index(session)
         df_filtered = df_filtered[df_filtered['session'] == session_idx]
@@ -126,7 +132,7 @@ def filter_df(player=OVERALL, session=OVERALL, roll_type=OVERALL):
     Output("type_graph", "figure"),
     [Input("dropdown_player", "value")])
 def update_roll_types(player):
-    df_filtered = filter_df(player=player)
+    df_filtered = filter_df(df, player=player)
 
     data = df_filtered.groupby(['session','type']).count()['value'].reset_index(level=[0,1])
     totals = df_filtered.groupby(['session']).count()['value']
@@ -170,7 +176,7 @@ def get_stats(df_filtered, good_thresh, bad_thresh):
      Input("input_good_roll", "value"),
      Input("input_bad_roll", "value")])
 def update_roll_table(session, roll_type, good_thresh, bad_thresh):
-    df_filtered = filter_df(session=session, roll_type=roll_type)
+    df_filtered = filter_df(df, session=session, roll_type=roll_type)
 
     data = []
 
@@ -178,7 +184,7 @@ def update_roll_table(session, roll_type, good_thresh, bad_thresh):
     stats['Player'] = OVERALL
     data.append(stats)
     for player in players:
-        stats = get_stats(df_filtered[df_filtered['character'] == player], good_thresh, bad_thresh)
+        stats = get_stats(filter_df(df_filtered, player=player), good_thresh, bad_thresh)
         stats['Player'] = player
         data.append(stats)
 
@@ -191,7 +197,7 @@ def update_roll_table(session, roll_type, good_thresh, bad_thresh):
      Input("input_good_roll", "value"),
      Input("input_bad_roll", "value")])
 def update_roll_graph(player, roll_type, good_thresh, bad_thresh):
-    df_filtered = filter_df(player=player, roll_type=roll_type)
+    df_filtered = filter_df(df, player=player, roll_type=roll_type)
 
     stats = defaultdict(list)
 
@@ -214,7 +220,7 @@ def update_roll_graph(player, roll_type, good_thresh, bad_thresh):
      Input("dropdown_player", "value"),
      Input("dropdown_type", "value")])
 def update_roll_hist(session, player, roll_type):
-    df_filtered = filter_df(session=session, player=player, roll_type=roll_type)
+    df_filtered = filter_df(df, session=session, player=player, roll_type=roll_type)
     fig = px.histogram(df_filtered, x="value", labels={"value": 'Roll'}, nbins=20, range_x=[0.5, 20.5], title=f'Roll Histogram (Session={session} Player={player} RollType={roll_type})' )
     return fig
 
