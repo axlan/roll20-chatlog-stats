@@ -80,6 +80,12 @@ app.layout = dbc.Container([
                 )
             ]),
         ])]),
+        dbc.Col([dbc.Card([
+            html.H4("Instructions", className="card-title"),
+            html.P('You can filter to the rolls from a certain player, a particular session, or for a class of rolls.', className="card-text"),
+            html.P('These will still show up when those values are broken out in the table or graph.', className="card-text"),
+            html.P('"Good" and "Bad" rolls are set to critical success and failure by default, but you can set the threshold to what you consider "good" or "bad".', className="card-text")
+        ])]),
     ]),
 
     html.Br(),
