@@ -45,7 +45,7 @@ app.layout = dbc.Container([
                 dcc.Dropdown(
                     id="dropdown_player",
                     options=[{"label": x, "value": x}
-                            for x in  [OVERALL, ALL_PLAYERS] + players],
+                            for x in  [OVERALL] + players],
                     value=OVERALL,
                     clearable=False
                 )

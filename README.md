@@ -32,6 +32,8 @@ This could easily be changed around by modifying the parsing if you were interes
 
 The dashboard is a Plotly dash application. This is a framework that creates a Flask app that gives an interactive view into the data.
 
+The one thing I hard coded that would need to be update is the `players` variable which is just to distinguish the player characters from the NPCs for grouping in the dashboard.
+
 This can be run in debug mode with `python dashboard.py`
 
 I also included a `run.sh` and `roll20stats.service` file so that the page can be started as a systemd service <https://medium.com/@benmorel/creating-a-linux-service-with-systemd-611b5c8b91d6> .
